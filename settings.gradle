@@ -1,0 +1,7 @@
+rootProject.name="couchbase-root"
+
+include "couchbase"
+
+include 'docs-examples:example-groovy'
+include 'docs-examples:example-java'
+include 'docs-examples:example-kotlin'

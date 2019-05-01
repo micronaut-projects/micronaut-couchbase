@@ -1,0 +1,5 @@
+profile: configuration
+defaultPackage: io.micronaut.configuration
+---
+testFramework: spock
+sourceLanguage: java
