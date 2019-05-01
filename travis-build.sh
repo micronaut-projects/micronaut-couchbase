@@ -51,7 +51,8 @@ if [[ $EXIT_STATUS -eq 0 ]]; then
       if [[ -n $TRAVIS_TAG ]]; then
           ./gradlew bintrayUpload --no-daemon --stacktrace || EXIT_STATUS=$?
       else
-          ./gradlew publish --no-daemon --stacktrace || EXIT_STATUS=$?
+            echo "Disabled publishing snapshot, please edit travis-build.sh to enable it"
+#          ./gradlew publish --no-daemon --stacktrace || EXIT_STATUS=$?
       fi
 
       if [[ $EXIT_STATUS -eq 0 ]]; then
