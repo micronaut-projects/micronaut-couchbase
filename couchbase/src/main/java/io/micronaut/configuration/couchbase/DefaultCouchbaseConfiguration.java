@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 original authors
+ * Copyright 2017-2019 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,13 +28,12 @@ import io.micronaut.runtime.ApplicationConfiguration;
  * @author Graham Pople
  * @since 1.0
  */
-//@Requires(property = CouchbaseSettings.PREFIX) // TODO
 @Requires(classes = ClusterEnvironment.class)
 @ConfigurationProperties(CouchbaseSettings.PREFIX)
 public class DefaultCouchbaseConfiguration extends AbstractCouchbaseConfiguration {
 
     @ConfigurationBuilder(prefixes = "", configurationPrefix = "options")
-    // TODO needs to get username and password, plus other settings, from application.yml
+    // Needs to get username and password, plus other settings, from application.yml
     protected ClusterEnvironment.Builder clientOptions = ClusterEnvironment.builder("", "");
 
     /**

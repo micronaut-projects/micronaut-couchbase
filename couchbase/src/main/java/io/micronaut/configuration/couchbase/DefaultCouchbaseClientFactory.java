@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 original authors
+ * Copyright 2017-2019 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package io.micronaut.configuration.couchbase;
 
 import com.couchbase.client.java.Cluster;
-import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Primary;
 import io.micronaut.context.annotation.Requires;
@@ -37,15 +36,16 @@ public class DefaultCouchbaseClientFactory {
 
     /**
      * Factory method to return a Couchbase Cluster.
+     * @return a Couchbase Cluster
      */
-//    @Bean(preDestroy = "shutdown") // TODO
     @Primary
     @Singleton
 //    Cluster couchbaseCluster(DefaultCouchbaseConfiguration configuration) {
     Cluster couchbaseCluster() {
 
-        // TODO: should not depend on a hardcoded config, but pull in DefaultCouchbaseConfiguration instead.  Currently
+        // This should not depend on a hardcoded config, but pull in DefaultCouchbaseConfiguration instead.  Currently
         // this hits error:
+
         // io.micronaut.context.exceptions.BeanInstantiationException: Error instantiating bean of type  [com.couchbase.client.java.Cluster]
 
         // Message: tried to access class com.couchbase.client.core.env.ServiceConfig$Builder from class io.micronaut.configuration.couchbase.$DefaultCouchbaseConfigurationDefinition
