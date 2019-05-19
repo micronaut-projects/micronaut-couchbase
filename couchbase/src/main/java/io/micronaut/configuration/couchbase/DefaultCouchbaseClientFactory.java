@@ -17,6 +17,7 @@
 package io.micronaut.configuration.couchbase;
 
 import com.couchbase.client.java.Cluster;
+import com.couchbase.client.java.env.ClusterEnvironment;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Primary;
 import io.micronaut.context.annotation.Requires;
@@ -36,21 +37,15 @@ public class DefaultCouchbaseClientFactory {
 
     /**
      * Factory method to return a Couchbase Cluster.
+     * @param configuration an injected DefaultCouchbaseConfiguration
      * @return a Couchbase Cluster
      */
     @Primary
     @Singleton
-//    Cluster couchbaseCluster(DefaultCouchbaseConfiguration configuration) {
-    Cluster couchbaseCluster() {
+    Cluster couchbaseCluster(DefaultCouchbaseConfiguration configuration) {
+        // Need to destroy env at end
+        ClusterEnvironment env = configuration.buildEnvironment();
 
-        // This should not depend on a hardcoded config, but pull in DefaultCouchbaseConfiguration instead.  Currently
-        // this hits error:
-
-        // io.micronaut.context.exceptions.BeanInstantiationException: Error instantiating bean of type  [com.couchbase.client.java.Cluster]
-
-        // Message: tried to access class com.couchbase.client.core.env.ServiceConfig$Builder from class io.micronaut.configuration.couchbase.$DefaultCouchbaseConfigurationDefinition
-        // Path Taken: Cluster.couchbaseCluster([DefaultCouchbaseConfiguration configuration])
-
-        return Cluster.connect("localhost", "Administrator", "password");
+        return Cluster.connect(env);
     }
 }

@@ -19,6 +19,8 @@ package io.micronaut.configuration.couchbase;
 /**
  * Common constants for Couchbase settings.
  *
+ * Note that this may not be the final names for these settings, this is just to get bootstrapping.
+ *
  * @author Graham Pople
  * @since 1.0
  */
@@ -27,4 +29,32 @@ public interface CouchbaseSettings {
      * The prefix to use for all Couchbase settings.
      */
     String PREFIX = "couchbase";
+
+    /**
+     * The hostname of a Couchbase node in the cluster to connect to.
+     */
+    String URI = "uri";
+
+    /**
+     * The username of the Couchbase user that will be accessing the cluster.
+     */
+    String USERNAME = "username";
+
+    /**
+     * The password of the Couchbase user that will be accessing the cluster.
+     */
+    String PASSWORD = "password";
+
+    /**
+     * The configuration port (KV) to use for connecting to the cluster.  Usually only used in test or development
+     * scenarios.
+     */
+    String PORT_KV = "port.kv";
+
+    /**
+     * The configuration port (HTTP) to use for connecting to the cluster.  Usually only used in test or development
+     * scenarios.
+     */
+    String PORT_HTTP = "port.http";
+
 }

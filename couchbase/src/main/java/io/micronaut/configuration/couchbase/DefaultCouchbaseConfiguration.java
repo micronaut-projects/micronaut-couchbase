@@ -16,11 +16,15 @@
 
 package io.micronaut.configuration.couchbase;
 
+import com.couchbase.client.core.env.SeedNode;
 import com.couchbase.client.java.env.ClusterEnvironment;
-import io.micronaut.context.annotation.ConfigurationBuilder;
 import io.micronaut.context.annotation.ConfigurationProperties;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.runtime.ApplicationConfiguration;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.util.Optional;
 
 /**
  * The default Couchbase configuration class.
@@ -32,10 +36,27 @@ import io.micronaut.runtime.ApplicationConfiguration;
 @ConfigurationProperties(CouchbaseSettings.PREFIX)
 public class DefaultCouchbaseConfiguration extends AbstractCouchbaseConfiguration {
 
-    @ConfigurationBuilder(prefixes = "", configurationPrefix = "options")
-    // Needs to get username and password, plus other settings, from application.yml
-    protected ClusterEnvironment.Builder clientOptions = ClusterEnvironment.builder("", "");
+    @NotBlank
+    @NotNull
+    String uri;
 
+    @NotBlank
+    @NotNull
+    String username;
+
+    @NotBlank
+    @NotNull
+    String password;
+
+    Port port = new Port();
+
+
+    // Long term it would be preferable to pull in the config directly to a ClusterEnvironment.Builder using
+    // ConfigurationBuilder, but this hits this error (Graal related?) so only supporting a limited config for now:
+    // Message: tried to access class com.couchbase.client.core.env.ServiceConfig$Builder from class io.micronaut.configuration.couchbase.$DefaultCouchbaseConfigurationDefinition
+    // Path Taken: Cluster.couchbaseCluster([DefaultCouchbaseConfiguration configuration])
+
+//
     /**
      * Constructor.
      * @param applicationConfiguration applicationConfiguration
@@ -46,9 +67,26 @@ public class DefaultCouchbaseConfiguration extends AbstractCouchbaseConfiguratio
 
 
     /**
-     * @return Builds the Couchbase URI
+     * @return Builds the Couchbase ClusterEnvironment
      */
     public ClusterEnvironment buildEnvironment() {
-        return clientOptions.build();
+        ClusterEnvironment.Builder opts;
+        if (port.kv.isPresent() || port.http.isPresent()) {
+            opts = ClusterEnvironment.builder(username, password);
+            opts.seedNodes(SeedNode.create(uri, port.kv, port.http));
+        } else {
+            opts = ClusterEnvironment.builder(uri, username, password);
+        }
+        ClusterEnvironment out = opts.build();
+        return out;
+    }
+
+    /**
+     * Port configuration, e.g. what ports the Couchbase cluster has exposed for management.
+     */
+    @ConfigurationProperties("port")
+    public static class Port {
+        Optional<Integer> kv = Optional.empty();
+        Optional<Integer> http = Optional.empty();
     }
 }

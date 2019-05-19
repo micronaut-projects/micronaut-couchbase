@@ -13,6 +13,6 @@
     </root>
     <logger name="io.micronaut.configuration.couchbase" level="TRACE"/>
     <!--<logger name="io.micronaut.context" level="TRACE"/>-->
-    <logger name="io.micronaut.context.condition" level="DEBUG"/>
+<!--    <logger name="io.micronaut.context.condition" level="DEBUG"/>-->
 
 </configuration>
