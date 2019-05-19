@@ -2,19 +2,12 @@ import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.Collection;
 import com.couchbase.client.java.json.JsonObject;
 import com.couchbase.client.java.kv.GetResult;
-import com.couchbase.mock.Bucket;
-import com.couchbase.mock.BucketConfiguration;
-import com.couchbase.mock.CouchbaseMock;
-import com.couchbase.mock.memcached.MemcachedServer;
-import io.micronaut.configuration.couchbase.CouchbaseSettings;
 import io.micronaut.context.ApplicationContext;
-import io.micronaut.context.env.PropertySource;
-import io.micronaut.core.util.CollectionUtils;
 import org.junit.Test;
 import util.TestUtil;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 
