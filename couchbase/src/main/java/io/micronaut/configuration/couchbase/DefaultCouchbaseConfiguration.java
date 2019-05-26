@@ -16,10 +16,9 @@
 
 package io.micronaut.configuration.couchbase;
 
-import com.couchbase.client.core.env.SeedNode;
-import com.couchbase.client.java.env.ClusterEnvironment;
+import com.couchbase.client.java.env.CouchbaseEnvironment;
+import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
 import io.micronaut.context.annotation.ConfigurationProperties;
-import io.micronaut.context.annotation.Requires;
 import io.micronaut.runtime.ApplicationConfiguration;
 
 import javax.validation.constraints.NotBlank;
@@ -32,7 +31,7 @@ import java.util.Optional;
  * @author Graham Pople
  * @since 1.0
  */
-@Requires(classes = ClusterEnvironment.class)
+//@Requires(classes = ClusterEnvironment.class)
 @ConfigurationProperties(CouchbaseSettings.PREFIX)
 public class DefaultCouchbaseConfiguration extends AbstractCouchbaseConfiguration {
 
@@ -48,6 +47,8 @@ public class DefaultCouchbaseConfiguration extends AbstractCouchbaseConfiguratio
     @NotNull
     String password;
 
+    Boolean authDisabled = false;
+
     Port port = new Port();
 
 
@@ -56,7 +57,7 @@ public class DefaultCouchbaseConfiguration extends AbstractCouchbaseConfiguratio
     // Message: tried to access class com.couchbase.client.core.env.ServiceConfig$Builder from class io.micronaut.configuration.couchbase.$DefaultCouchbaseConfigurationDefinition
     // Path Taken: Cluster.couchbaseCluster([DefaultCouchbaseConfiguration configuration])
 
-//
+
     /**
      * Constructor.
      * @param applicationConfiguration applicationConfiguration
@@ -69,16 +70,15 @@ public class DefaultCouchbaseConfiguration extends AbstractCouchbaseConfiguratio
     /**
      * @return Builds the Couchbase ClusterEnvironment
      */
-    public ClusterEnvironment buildEnvironment() {
-        ClusterEnvironment.Builder opts;
-        if (port.kv.isPresent() || port.http.isPresent()) {
-            opts = ClusterEnvironment.builder(username, password);
-            opts.seedNodes(SeedNode.create(uri, port.kv, port.http));
-        } else {
-            opts = ClusterEnvironment.builder(uri, username, password);
-        }
-        ClusterEnvironment out = opts.build();
-        return out;
+    public CouchbaseEnvironment buildEnvironment() {
+
+        DefaultCouchbaseEnvironment.Builder builder = DefaultCouchbaseEnvironment.builder();
+
+        port.http.ifPresent(builder::bootstrapHttpDirectPort);
+        port.carrier.ifPresent(builder::bootstrapCarrierDirectPort);
+        // There are a number of other Couchbase parameters here than can be exposed
+
+        return builder.build();
     }
 
     /**
@@ -86,7 +86,7 @@ public class DefaultCouchbaseConfiguration extends AbstractCouchbaseConfiguratio
      */
     @ConfigurationProperties("port")
     public static class Port {
-        Optional<Integer> kv = Optional.empty();
         Optional<Integer> http = Optional.empty();
+        Optional<Integer> carrier = Optional.empty();
     }
 }

@@ -15,5 +15,12 @@ dependencies {
 
     // Note: as Couchbase Java SDK 3.x is currently in alpha, micronaut-couchbase should not currently be used in
     // production
-    compile 'com.couchbase.client:java-client:3.0.0-alpha.2'
+//    compile 'com.couchbase.client:java-client:3.0.0-alpha.3'
+    compile 'com.couchbase.client:java-client:2.7.6'
+}
+
+// Show stdout from gradle test, using while debugging Travis
+test {
+    dependsOn cleanTest
+    testLogging.showStandardStreams = true
 }

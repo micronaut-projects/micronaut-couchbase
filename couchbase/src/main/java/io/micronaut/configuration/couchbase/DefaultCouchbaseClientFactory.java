@@ -17,7 +17,8 @@
 package io.micronaut.configuration.couchbase;
 
 import com.couchbase.client.java.Cluster;
-import com.couchbase.client.java.env.ClusterEnvironment;
+import com.couchbase.client.java.CouchbaseCluster;
+import com.couchbase.client.java.env.CouchbaseEnvironment;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Primary;
 import io.micronaut.context.annotation.Requires;
@@ -44,8 +45,13 @@ public class DefaultCouchbaseClientFactory {
     @Singleton
     Cluster couchbaseCluster(DefaultCouchbaseConfiguration configuration) {
         // Need to destroy env at end
-        ClusterEnvironment env = configuration.buildEnvironment();
+        CouchbaseEnvironment env = configuration.buildEnvironment();
+        Cluster cluster = CouchbaseCluster.create(env);
 
-        return Cluster.connect(env);
+        if (!configuration.authDisabled) {
+            cluster.authenticate(configuration.username, configuration.password);
+        }
+
+        return cluster;
     }
 }

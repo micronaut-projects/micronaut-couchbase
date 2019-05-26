@@ -46,15 +46,20 @@ public interface CouchbaseSettings {
     String PASSWORD = "password";
 
     /**
-     * The configuration port (KV) to use for connecting to the cluster.  Usually only used in test or development
-     * scenarios.
-     */
-    String PORT_KV = "port.kv";
-
-    /**
      * The configuration port (HTTP) to use for connecting to the cluster.  Usually only used in test or development
      * scenarios.
      */
     String PORT_HTTP = "port.http";
 
+    /**
+     * The configuration port (carrier) to use for connecting to the cluster.  Usually only used in test or development
+     * scenarios.
+     */
+    String PORT_CARRIER = "port.carrier";
+
+    /**
+     * Prior to Couchbase Server 5.0, there was no Role-Based Access Control, so authentication should be disabled.
+     * It also needs to be disabled during testing against the mock.
+     */
+    String AUTH_DISABLED = "authDisabled";
 }
