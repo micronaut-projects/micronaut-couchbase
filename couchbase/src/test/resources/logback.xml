@@ -11,6 +11,14 @@
     <root level="error">
         <appender-ref ref="STDOUT" />
     </root>
+
     <logger name="io.micronaut.configuration.couchbase" level="TRACE"/>
+
+    <!-- Control all Couchbase logging -->
+<!--    <logger name="com.couchbase" level="TRACE"/>-->
+    <logger name="com.couchbase" level="DEBUG"/>
+
     <!--<logger name="io.micronaut.context" level="TRACE"/>-->
+<!--    <logger name="io.micronaut.context.condition" level="DEBUG"/>-->
+
 </configuration>
