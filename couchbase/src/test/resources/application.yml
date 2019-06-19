@@ -8,3 +8,4 @@ couchbase:
   uri: "localhost"
   username: "Administrator"
   password: "password"
+  management-timeout: 1000

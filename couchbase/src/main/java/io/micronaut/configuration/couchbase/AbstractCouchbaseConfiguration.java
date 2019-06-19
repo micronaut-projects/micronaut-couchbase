@@ -20,9 +20,10 @@ import io.micronaut.runtime.ApplicationConfiguration;
 
 /**
  * @author Graham Pople
+ * @author graemerocher
  * @since 1.0
  */
-public abstract class AbstractCouchbaseConfiguration {
+public abstract class AbstractCouchbaseConfiguration implements CouchbaseSettings {
 
     private final ApplicationConfiguration applicationConfiguration;
 

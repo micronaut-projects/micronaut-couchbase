@@ -29,6 +29,7 @@ import javax.inject.Singleton;
  * Builds the primary Couchbase Cluster.
  *
  * @author Graham Pople
+ * @author graemerocher
  * @since 1.0
  */
 @Requires(classes = Cluster.class)
@@ -37,21 +38,28 @@ import javax.inject.Singleton;
 public class DefaultCouchbaseClientFactory {
 
     /**
+     * Factory method to create the Couchbase environment.
+     * @param configuration The configuration
+     * @return The environment
+     */
+    @Primary
+    @Singleton
+    protected CouchbaseEnvironment couchbaseEnvironment(DefaultCouchbaseConfiguration configuration) {
+        return configuration.buildEnvironment();
+    }
+
+    /**
      * Factory method to return a Couchbase Cluster.
      * @param configuration an injected DefaultCouchbaseConfiguration
      * @return a Couchbase Cluster
      */
     @Primary
     @Singleton
-    Cluster couchbaseCluster(DefaultCouchbaseConfiguration configuration) {
-        // Need to destroy env at end
-        CouchbaseEnvironment env = configuration.buildEnvironment();
+    protected Cluster couchbaseCluster(CouchbaseEnvironment env, DefaultCouchbaseConfiguration configuration) {
         Cluster cluster = CouchbaseCluster.create(env);
-
-        if (!configuration.authDisabled) {
-            cluster.authenticate(configuration.username, configuration.password);
+        if (!configuration.isAuthDisabled()) {
+            cluster.authenticate(configuration.getUsername(), configuration.getPassword());
         }
-
         return cluster;
     }
 }

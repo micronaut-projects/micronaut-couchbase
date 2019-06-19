@@ -18,12 +18,16 @@ package io.micronaut.configuration.couchbase;
 
 import com.couchbase.client.java.env.CouchbaseEnvironment;
 import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
+import io.micronaut.context.annotation.ConfigurationBuilder;
 import io.micronaut.context.annotation.ConfigurationProperties;
+import io.micronaut.context.annotation.Requires;
 import io.micronaut.runtime.ApplicationConfiguration;
 
+import javax.inject.Inject;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Optional;
+import java.util.OptionalInt;
 
 /**
  * The default Couchbase configuration class.
@@ -31,7 +35,7 @@ import java.util.Optional;
  * @author Graham Pople
  * @since 1.0
  */
-//@Requires(classes = ClusterEnvironment.class)
+@Requires(classes = CouchbaseEnvironment.class)
 @ConfigurationProperties(CouchbaseSettings.PREFIX)
 public class DefaultCouchbaseConfiguration extends AbstractCouchbaseConfiguration {
 
@@ -41,21 +45,19 @@ public class DefaultCouchbaseConfiguration extends AbstractCouchbaseConfiguratio
 
     @NotBlank
     @NotNull
-    String username;
+    private String username;
 
     @NotBlank
     @NotNull
-    String password;
+    private String password;
 
-    Boolean authDisabled = false;
+    private boolean authDisabled = false;
 
-    Port port = new Port();
+    private Port port = new Port();
 
-
-    // Long term it would be preferable to pull in the config directly to a ClusterEnvironment.Builder using
-    // ConfigurationBuilder, but this hits this error (Graal related?) so only supporting a limited config for now:
-    // Message: tried to access class com.couchbase.client.core.env.ServiceConfig$Builder from class io.micronaut.configuration.couchbase.$DefaultCouchbaseConfigurationDefinition
-    // Path Taken: Cluster.couchbaseCluster([DefaultCouchbaseConfiguration configuration])
+    @ConfigurationBuilder(prefixes = "")
+    protected DefaultCouchbaseEnvironment.Builder config =
+            DefaultCouchbaseEnvironment.builder();
 
 
     /**
@@ -66,19 +68,46 @@ public class DefaultCouchbaseConfiguration extends AbstractCouchbaseConfiguratio
         super(applicationConfiguration);
     }
 
+    @Inject
+    public void setPort(Port port) {
+        this.port = port;
+    }
+
+    public boolean isAuthDisabled() {
+        return authDisabled;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setAuthDisabled(boolean authDisabled) {
+        this.authDisabled = authDisabled;
+    }
 
     /**
      * @return Builds the Couchbase ClusterEnvironment
      */
     public CouchbaseEnvironment buildEnvironment() {
 
-        DefaultCouchbaseEnvironment.Builder builder = DefaultCouchbaseEnvironment.builder();
 
-        port.http.ifPresent(builder::bootstrapHttpDirectPort);
-        port.carrier.ifPresent(builder::bootstrapCarrierDirectPort);
+        port.getHttp().ifPresent(config::bootstrapHttpDirectPort);
+        port.getCarrier().ifPresent(config::bootstrapCarrierDirectPort);
         // There are a number of other Couchbase parameters here than can be exposed
 
-        return builder.build();
+        return config.build();
     }
 
     /**
@@ -86,7 +115,35 @@ public class DefaultCouchbaseConfiguration extends AbstractCouchbaseConfiguratio
      */
     @ConfigurationProperties("port")
     public static class Port {
-        Optional<Integer> http = Optional.empty();
-        Optional<Integer> carrier = Optional.empty();
+        private Integer http;
+        private Integer carrier;
+
+        /**
+         * @return The HTTP port
+         */
+        public OptionalInt getHttp() {
+            if (http != null) {
+                return OptionalInt.of(http);
+            }
+            return OptionalInt.empty();
+        }
+
+        public void setHttp(Integer http) {
+            this.http = http;
+        }
+
+        /**
+         * @return The carrier port
+         */
+        public OptionalInt getCarrier() {
+            if (carrier != null) {
+                return OptionalInt.of(carrier);
+            }
+            return OptionalInt.empty();
+        }
+
+        public void setCarrier(Integer carrier) {
+            this.carrier = carrier;
+        }
     }
 }

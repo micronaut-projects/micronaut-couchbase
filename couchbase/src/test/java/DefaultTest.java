@@ -3,6 +3,7 @@ import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.document.JsonDocument;
 import com.couchbase.client.java.document.json.JsonObject;
+import com.couchbase.client.java.env.CouchbaseEnvironment;
 import com.couchbase.mock.CouchbaseMock;
 import io.micronaut.configuration.couchbase.CouchbaseSettings;
 import io.micronaut.context.ApplicationContext;
@@ -12,6 +13,7 @@ import org.junit.Test;
 import util.TestUtil;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
@@ -27,6 +29,8 @@ public class DefaultTest {
     @Test
     public void injectCluster() throws IOException {
         ApplicationContext applicationContext = ApplicationContext.run();
+        CouchbaseEnvironment env = applicationContext.getBean(CouchbaseEnvironment.class);
+        assertEquals(1000, env.managementTimeout());
         Cluster cluster = applicationContext.getBean(Cluster.class);
         assertNotNull(cluster);
     }
