@@ -1,0 +1,10 @@
+---
+micronaut:
+  application:
+    name: micronaut-couchbase-example-java
+
+---
+couchbase:
+  uri: "localhost"
+  username: "Administrator"
+  password: "password"

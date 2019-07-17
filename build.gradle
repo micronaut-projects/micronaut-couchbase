@@ -48,6 +48,9 @@ subprojects {Project subproject ->
         mavenLocal()
         maven { url "https://repo.grails.org/grails/core" }
         maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
+        // As Couchbase Java SDK 3.x is currently in alpha, it is hosted on Couchbase's servers.  The GA release
+        // will be on Maven Central.
+        maven { url 'https://files.couchbase.com/maven2' }
     }
     
     if (subproject.parent.name == "docs-examples" || subproject.name == "docs-examples") {
