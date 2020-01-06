@@ -15,7 +15,7 @@ dependencies {
     compile "io.micronaut:micronaut-validation"
     compile "io.swagger.core.v3:swagger-annotations"
     compile "io.micronaut.configuration:micronaut-hibernate-validator"
-    compile 'org.awaitility:awaitility:3.1.6'
+    compile 'org.awaitility:awaitility:4.0.2'
     compile "org.junit.jupiter:junit-jupiter-api:$junitVersion"
     runtime "ch.qos.logback:logback-classic:1.2.3"
 
