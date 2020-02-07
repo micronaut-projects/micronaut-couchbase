@@ -11,7 +11,7 @@ dependencies {
     testCompile "io.micronaut:micronaut-inject-java-test:$micronautVersion"
     testCompile "io.reactivex.rxjava2:rxjava:$rxJava2Version"
 
-    testCompile 'com.couchbase.mock:CouchbaseMock:1.5.22'
+    testCompile 'com.couchbase.mock:CouchbaseMock:1.5.25'
 
     // Note: as Couchbase Java SDK 3.x is currently in alpha, micronaut-couchbase should not currently be used in
     // production
