@@ -15,7 +15,7 @@ dependencies {
     testCompile "io.micronaut:micronaut-validation"
     testCompile "io.micronaut.configuration:micronaut-hibernate-validator"
     testCompileOnly "io.micronaut:micronaut-inject-groovy"
-    testCompile "org.testcontainers:spock:1.15.1"
+    testCompile "org.testcontainers:spock:1.17.5"
     testCompile("org.spockframework:spock-core") {
         exclude group: "org.codehaus.groovy", module: "groovy-all"
     }
