@@ -19,7 +19,14 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        graalvm: ['21.0.0.2.java8', '21.0.0.2.java11']
+        graalvm: [ 'latest', 'dev' ]
+        java: [ '17' ]
+        include:
+          - graalvm: 'dev'
+            java: '19'
+        exclude:
+          - graalvm: 'dev'
+            java: '17'
     steps:
        # https://github.com/actions/virtual-environments/issues/709
       - name: Free disk space
@@ -27,21 +34,25 @@ jobs:
          sudo rm -rf "/usr/local/share/boost"
          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
          sudo apt-get clean
-         df -h    
-      - uses: actions/checkout@v2
-      - uses: actions/cache@v2.1.4
+         df -h
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
       - name: Setup GraalVM CE
-        uses: DeLaGuardo/setup-graalvm@4.0
+        uses: graalvm/setup-graalvm@v1
         with:
-          graalvm-version: ${{ matrix.graalvm }}
-      - name: Install Native Image
-        run: gu install native-image
+          version: ${{ matrix.graalvm }}
+          java-version: ${{ matrix.java }}
+          components: 'native-image'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2.3.3
       - name: Build with Gradle
+        id: gradle
         run: |
           if ./gradlew tasks --no-daemon --all | grep -w "testNativeImage"
           then
@@ -51,3 +62,28 @@ jobs:
           fi
         env:
            TESTCONTAINERS_RYUK_DISABLED: true
+           GH_TOKEN_PUBLIC_REPOS_READONLY: ${{ secrets.GH_TOKEN_PUBLIC_REPOS_READONLY }}
+           GH_USERNAME: ${{ secrets.GH_USERNAME }}
+           GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GRADLE_ENTERPRISE_ACCESS_KEY }}
+           GRADLE_ENTERPRISE_CACHE_USERNAME: ${{ secrets.GRADLE_ENTERPRISE_CACHE_USERNAME }}
+           GRADLE_ENTERPRISE_CACHE_PASSWORD: ${{ secrets.GRADLE_ENTERPRISE_CACHE_PASSWORD }}
+           PREDICTIVE_TEST_SELECTION: "${{ github.event_name == 'pull_request' && 'true' || 'false' }}"
+      - name: Add build scan URL as PR comment
+        uses: actions/github-script@v5
+        if: github.event_name == 'pull_request' && failure()
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '❌ ${{ github.workflow }} ${{ matrix.java }} ${{ matrix.graalvm }} failed: ${{ steps.gradle.outputs.build-scan-url }}'
+            })
+      - name: Publish Test Report
+        if: always()
+        uses: mikepenz/action-junit-report@v3.7.1
+        with:
+          check_name: GraalVM CE CI / Test Report (Java ${{ matrix.java }})
+          report_paths: '**/build/test-results/test/TEST-*.xml'
+          check_retries: 'true'
